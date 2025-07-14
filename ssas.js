@@ -3,7 +3,6 @@
     const getURL = () => location.href.split("/").at(-1);
     const roundNums = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳㉑㉒㉓㉔㉕㉖㉗㉘㉙㉚㉛㉜㉝㉞㉟㊱㊲㊳㊴㊵㊶㊷㊸㊹㊺㊻㊼㊽㊾㊿";
     const answers = [];
-    const coolTime = 50;
     function getAnswer() {
         return new Promise(rs1 => {
             const currentURL = getURL();
@@ -22,7 +21,7 @@
                         clearInterval(interval_1);
                         rs2();
                     }
-                }, coolTime);
+                });
             }).then(() => {
                 const interval_2 = setInterval(() => {
                     if (currentURL == getURL()) {
@@ -31,7 +30,7 @@
                         clearInterval(interval_2);
                         rs1();
                     }
-                }, coolTime);
+                });
             });
         });
     }
@@ -47,7 +46,7 @@
                 clearInterval(interval_3);
                 rs3();
             }
-        }, coolTime);
+        });
     }).then(async () => {
         while (true) {
             const currentURL = getURL();
@@ -66,7 +65,7 @@
                         clearInterval(interval_4);
                         rs4();
                     }
-                }, coolTime);
+                },500);
             });
         }
     });
