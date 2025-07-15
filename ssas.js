@@ -1,4 +1,4 @@
-(async function () {
+async function a() {
     const nextButtonClick = () => document.querySelector("button[class^=RaisedButton]").click();
     const getURL = () => location.href.split("/").at(-1);
     const roundNums = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳㉑㉒㉓㉔㉕㉖㉗㉘㉙㉚㉛㉜㉝㉞㉟㊱㊲㊳㊴㊵㊶㊷㊸㊹㊺㊻㊼㊽㊾㊿";
@@ -65,8 +65,8 @@
                         clearInterval(interval_4);
                         rs4();
                     }
-                },500);
+                },1000);
             });
         }
     });
-})();
+}
