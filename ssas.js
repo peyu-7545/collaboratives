@@ -1,72 +1,128 @@
-async function a() {
+async function solve() {
     const nextButtonClick = () => document.querySelector("button[class^=RaisedButton]").click();
-    const getURL = () => location.href.split("/").at(-1);
-    const roundNums = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳㉑㉒㉓㉔㉕㉖㉗㉘㉙㉚㉛㉜㉝㉞㉟㊱㊲㊳㊴㊵㊶㊷㊸㊹㊺㊻㊼㊽㊾㊿";
-    const answers = [];
+    const getURL = () => window.location.href.split("/").at(-1);
+    const answers = {};
+
+    // 答えを取得する
     function getAnswer() {
-        return new Promise(rs1 => {
-            const currentURL = getURL();
-            const mulChoice = document.querySelector("button[class*=QuizMultipleChoice]");
-            let dropChoice;
-            if (mulChoice) {
-                mulChoice.click();
+
+        // 現在のURL
+        const currentURL = getURL();
+
+        // 答えが取得できたら解決
+        return new Promise(rs => {
+
+            // クイズボタンがあるか確認
+            const quizButtons = document.querySelector("button[class*=QuizMultipleChoice]");
+            const isOnly = quizButtons !== null;
+            let choice;
+
+            if (isOnly) {
+
+                // 答えが一つ
+                quizButtons.click();
             } else {
-                [...(dropChoice = document.querySelectorAll("div[class^=QuizDropdown__Menu]"))].forEach(e => e.children[0].click());
+
+                const selects = [...document.querySelectorAll("div[class^=QuizDropdown__Menu]")];
+
+                // 複数(全ての解答欄で最初の選択肢をクリックする)
+                selects.forEach(e => e.children[0].click());
+                choice = [...selects[0].children].map(e => e.children[0].textContent);
             }
-            new Promise(rs2 => {
-                const interval_1 = setInterval(() => {
-                    nextButtonClick();
-                    if (ans = [...document.querySelectorAll("p")].find(e => e.textContent.startsWith("正解："))?.textContent.slice(3)) {
-                        answers[currentURL - 1] = dropChoice ? ans.split("，").map(e => e.split("　").at(-1).toLowerCase()).map(e => [...dropChoice[0].children].map(p => p.children[0].textContent).indexOf(e)) : roundNums.search(ans);
-                        clearInterval(interval_1);
-                        rs2();
-                    }
-                });
-            }).then(() => {
-                const interval_2 = setInterval(() => {
-                    if (currentURL == getURL()) {
-                        nextButtonClick();
+
+            // 正解が出現するまでループ
+            const interval1 = setInterval(() => {
+
+                // 「解答する」ボタンをクリックし続ける
+                nextButtonClick();
+
+                // 答えがある要素
+                const answerElement = [...document.querySelectorAll("p")].find(e => e.textContent.startsWith("正解："));
+
+                // 要素が存在するか
+                if (answerElement) {
+
+                    // "正解："の後を切り取る
+                    const answer = answerElement.textContent.slice(3);
+
+                    if (isOnly) {
+
+                        // 答えが1つのみの場合(丸数字)
+                        const roundNums = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳㉑㉒㉓㉔㉕㉖㉗㉘㉙㉚㉛㉜㉝㉞㉟㊱㊲㊳㊴㊵㊶㊷㊸㊹㊺㊻㊼㊽㊾㊿";
+                        answers[currentURL] = roundNums.indexOf(answer);
+
                     } else {
-                        clearInterval(interval_2);
-                        rs1();
+
+                        // 答えが複数の場合
+                        const convert = answer.split("，").map(e => e.split("　").at(-1).toLowerCase());
+                        answers[currentURL] = convert.map(e => choice.indexOf(e));
                     }
-                });
+
+                    // URL遷移
+                    const interval2 = setInterval(() => {
+                        if (currentURL == getURL()) {
+
+                            // URLが同じなら次へ進むボタンを押し続ける
+                            nextButtonClick();
+                        } else {
+
+                            // 次へ進んだので解決
+                            rs();
+                        }
+                    });
+
+                    // ループは切る
+                    clearInterval(interval1);
+                }
             });
         });
     }
+
+    // 答えを送信する
+    function submitAnswer() {
+
+        return new Promise(rs => {
+            const currentURL = getURL();
+            const isLast = currentURL == Object.keys(answers).at(-1);
+            const currentAnswer = answers[currentURL];
+
+            if (typeof currentAnswer == "number") {
+                // 数値(答えが1つ)
+                document.querySelectorAll("button[class*=QuizMultipleChoice]")[currentAnswer].click();
+            } else {
+                // 答えが複数
+                [...document.querySelectorAll("div[class^=QuizDropdown__Menu]")].forEach((e, i) => e.children[currentAnswer[i]].click());
+            }
+
+            // URL遷移
+            const interval3 = setInterval(() => {
+                if (currentURL == getURL()) {
+                    nextButtonClick();
+                } else {
+                    clearInterval(interval3);
+                    rs();
+                }
+            }, isLast && 3000);
+        });
+    }
+
+    // 答えを取得する
     while (true) {
         await getAnswer();
-        if (getURL() == "result") break;
-    }
-    new Promise(rs3 => {
-        const interval_3 = setInterval(() => {
-            if (getURL() == "result") {
-                nextButtonClick();
-            } else {
-                clearInterval(interval_3);
-                rs3();
-            }
-        });
-    }).then(async () => {
-        while (true) {
-            const currentURL = getURL();
-            if (currentURL == "result") break;
-            const currentAnswer = answers[currentURL - 1];
-            if (typeof currentAnswer == "number") {
-                currentAnswer && document.querySelectorAll("button[class*=QuizMultipleChoice]")[currentAnswer].click();
-            } else {
-                currentAnswer.some(e => e) && [...document.querySelectorAll("div[class^=QuizDropdown__Menu]")].forEach((e, i) => e.children[currentAnswer[i]].click());
-            }
-            await new Promise(rs4 => {
-                const interval_4 = setInterval(() => {
-                    if (getURL() == currentURL) {
-                        nextButtonClick();
-                    } else {
-                        clearInterval(interval_4);
-                        rs4();
-                    }
-                },1000);
-            });
+
+        // 結果画面に到達したら終了
+        if (getURL() == "result") {
+            break;
         }
-    });
+    }
+
+    // 答えを送信する
+    while (true) {
+        await submitAnswer();
+
+        // 結果画面に到達したら終了
+        if (getURL() == "result") {
+            break;
+        }
+    }
 }
