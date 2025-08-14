@@ -14,4 +14,7 @@
 [通常版](p.js)  
 [minify(容量圧縮版)](pm.js)  
 
-バグなどあったらこのリポジトリのissuesに報告してください。
+## その他
+豆知識:一回あたりの経験値上限は+6500  
+
+バグなどあったら[このリポジトリのissues](https://github.com/peyu-7545/collaboratives/issues)に報告してください。
